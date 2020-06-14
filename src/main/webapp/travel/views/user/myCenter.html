@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>带你去旅行-个人中心</title>
+		<%include("/travel/views/include.html"){}%>
+	</head>
+	
+	<body>
+		
+		<div id="app">
+			
+			
+			 <Layout>
+				  	<%include("/travel/views/otherHeader.html"){}%>
+				  <div style="width: 60%;margin: 20px auto;">
+				 
+				  
+				  <div class="top">
+					  
+					   <row>
+							<i-col span="8">
+							<Upload :show-upload-list="false"
+									:format="['jpg','jpeg','png']"
+									:max-size="2048"
+									multiple
+									type="drag" 
+									:on-success="handleSuccess"
+									style="width: 250px;height: 250px;overflow: hidden;margin-bottom: 20px;"
+									action="/user/upImg">
+							<img :src="user.img?user.img:'https://i.loli.net/2017/08/21/599a521472424.jpg'"  style="height: 280px; object-fit: cover; width: 280px; border-radius: 5px;" />
+							 </Upload>
+							</i-col>
+							<i-col span="8">
+								<div style="margin: 10px 20px;font-size:28px ;">${user.name}</div>
+								<div style="font-size: 18px;margin: 20px;border-bottom: #0070A9 solid 1px;">${user.sign}
+								<i-Button @click="modal9 = true" style="float: right;margin-bottom: 10px;" type="primary" shape="circle" icon="md-create"></i-Button></div>
+								 <Modal
+									title="修改个人信息"
+									v-model="modal9"
+									:styles="{top: '120px',padding:'20px'}"
+									@on-ok="updateUser">
+									<i-input prefix="ios-contact" placeholder="昵称"  v-model="user.name" style="margin: 20px;width: 85%;"></i-input>
+									<i-input  type="textarea" placeholder="个性签名" v-model="user.sign"   style="margin: 20px;width: 85%;"></i-input>
+								</Modal>
+							</i-col>
+						</row>
+						<row>
+							 <Tabs type="card">
+								<Tab-Pane label="我的攻略" @click="getMyStrategy()"><i-table border :columns="columnsStrategy" :data="strategyList"></i-table></Tab-Pane>
+								<Tab-Pane label="我的发帖" @click="getMyNote()"><i-table border :columns="columnsNote" :data="noteList"></i-table></Tab-Pane>
+								<Tab-Pane label="攻略问答" @click="getMyAnswer1()"><i-table border :columns="columnsAnswer1" :data="answerList1"></i-table></Tab-Pane>
+								<Tab-Pane label="帖子问答" @click="getMyAnswer2()"><i-table border :columns="columnsAnswer2" :data="answerList2"></i-table></Tab-Pane>
+								<Tab-Pane label="新消息" @click="getNewMessage()"><i-table border :columns="columnsNewMessage" :data="newMessageList"></i-table></Tab-Pane>
+								<Tab-Pane label="历史消息" @click="getOldMessage()"><i-table border :columns="columnsOldMessage" :data="oldMessageList"></i-table></Tab-Pane>
+							</Tabs>
+					    </row>
+					
+				  </div>
+				 
+				
+				 </div>
+				   <%include("/travel/views/footer.html"){}%>
+			</Layout>
+		</div>
+		
+		<script type="text/javascript">
+			var vm = new Vue({
+				el:'#app',
+				data:{
+					x:"0",
+					modal9:false,
+					user:{},
+					strategyList:[],
+					noteList:[],
+					answerList1:[],
+					answerList2:[],
+					newMessageList:[],
+					oldMessageList:[],
+					columnsStrategy:[
+						 {
+                        title: '标题',
+                        key: 'title'
+                    },
+					{
+					    title: '阅读量',
+					    key: 'readme'
+					},
+					{
+					    title: '点赞',
+					    key: 'laud'
+					},
+					{
+					    title: '审核状态:1=待审核,2=通过,3=未通过',
+					    key: 'status'
+					},
+                    {
+                        title: '操作',
+                        key: 'action',
+                        width: 150,
+                        align: 'center',
+                        render: (h, params) => {
+                            return h('div', [
+                                h('Button', {
+                                    props: {
+                                        type: 'error',
+                                        size: 'small'
+                                    },
+                                    on: {
+                                        click: () => {
+											vm.removeStrategy(params.row.id)
+											vm.strategyList.splice(params.index,1)
+                                        }
+                                    }
+                                }, '删除'),
+								h('Button', {
+								    props: {
+								        type: '',
+								        size: 'small'
+								    },
+								    on: {
+								        click: () => {
+								        	window.location.href = '/strategy/getAStrategy?id='+params.row.id;
+								        }
+								    }
+								}, '查看'),
+                            ]);
+                        }
+                    }],
+					columnsNote:[
+						 {
+                        title: '标题',
+                        key: 'title'
+                    },
+					{
+					    title: '阅读量',
+					    key: 'readme'
+					},
+					{
+					    title: '点赞',
+					    key: 'laud'
+					},
+					{
+					    title: '审核状态:1=待审核,2=通过,3=未通过',
+					    key: 'status'
+					},
+                    {
+                        title: '操作',
+                        key: 'action',
+                        width: 150,
+                        align: 'center',
+                        render: (h, params) => {
+                            return h('div', [
+                                h('Button', {
+                                    props: {
+                                        type: 'error',
+                                        size: 'small'
+                                    },
+                                    on: {
+                                        click: () => {
+											vm.removeNote(params.row.id)
+											vm.noteList.splice(params.index,1)
+                                        }
+                                    }
+                                }, '删除'),
+								h('Button', {
+								    props: {
+								        type: '',
+								        size: 'small'
+								    },
+								    on: {
+								        click: () => {
+								        	window.location.href = '/note/getANote?id='+params.row.id;
+								        }
+								    }
+								}, '查看')
+                            ]);
+                        }
+                    }],
+					columnsAnswer1:[
+						 {
+					    title: '回答谁',
+					    key: 'to_reply_username'
+					},
+					{
+					    title: '回复时间',
+					    key: 'reply_time'
+					},
+					{
+					    title: '问答内容',
+					    key: 'content'
+					},
+					
+					{
+					    title: '操作',
+					    key: 'action',
+					    width: 150,
+					    align: 'center',
+					    render: (h, params) => {
+					        return h('div', [
+								h('Button', {
+								    props: {
+								        type: 'error',
+								        size: 'small'
+								    },
+								    on: {
+								        click: () => {
+											vm.removeStrategyReply(params.row.id)
+											vm.answerList1.splice(params.index,1)
+								        }
+								    }
+								}, '删除'),
+								h('Button', {
+								    props: {
+								        type: '',
+								        size: 'small'
+								    },
+								    on: {
+								        click: () => {
+								        	window.location.href = '/strategy/getAStrategy?id='+params.row.id;
+								        }
+								    }
+								}, '查看详情')
+					        ]);
+					    }
+					}],
+					columnsAnswer2:[
+						 {
+					    title: '回答谁',
+					    key: 'to_reply_username'
+					},
+					{
+					    title: '回复时间',
+					    key: 'reply_time'
+					},
+					{
+					    title: '问答内容',
+					    key: 'content'
+					},
+					
+					{
+					    title: '操作',
+					    key: 'action',
+					    width: 150,
+					    align: 'center',
+					    render: (h, params) => {
+					        return h('div', [
+								h('Button', {
+								    props: {
+								        type: 'error',
+								        size: 'small'
+								    },
+								    on: {
+								        click: () => {
+											vm.removeNoteReply(params.row.id)
+											vm.answerList2.splice(params.index,1)
+								        }
+								    }
+								}, '删除'),
+								h('Button', {
+								    props: {
+								        type: '',
+								        size: 'small'
+								    },
+								    on: {
+								        click: () => {
+								        	window.location.href = '/note/getANote?id='+params.row.id;
+								        }
+								    }
+								}, '查看详情')
+					        ]);
+					    }
+					}],
+					columnsNewMessage:[
+			        			{
+			                        title: '发送者ID',
+			                        key: 'from'
+			                    },
+			                    {
+			                        title: '发送者姓名',
+			                        key: 'fromname'
+			                    },
+			        			{
+			        			    title: '消息内容',
+			        			    key: 'content'
+			        			},
+			        			{
+			        			    title: '模块',
+			        			    key: 'type'
+			        			},
+			                    {
+			                        title: '操作',
+			                        key: 'action',
+			                        width: 190,
+			                        align: 'center',
+			                        render: (h, params) => {
+			                            return h('div', [
+			                                h('Button', {
+			                                    props: {
+			                                        type: 'error',
+			                                        size: 'small'
+			                                    },
+			                                    on: {
+			                                        click: () => {
+			        									vm.removeMessage(params.row.id)
+			        									vm.newMessageList.splice(params.index,1)
+			                                        }
+			                                    }
+			                                }, '删除'),
+			        						h('Button', {
+			        						    props: {
+			        						        type: '',
+			        						        size: 'small'
+			        						    },
+			        						    on: {	
+			        						    	click: () => {
+														if(params.row.type=="攻略模块")
+														{
+			        						        	window.location.href = '/user/getAStrategy?id='+params.row.about_id+'&mid='+params.row.id;
+			        						        }
+			        						        else if(params.row.type=="交流模块"){ 	
+			        							        	window.location.href = '/user/getANote?id='+params.row.about_id+'&mid='+params.row.id;
+			        						        	}
+			        						    }
+												}
+			        						}, '查看'),
+											h('Button', {
+											    props: {
+											        type: '',
+											        size: 'small'
+											    },
+											    on: {
+											        click: () => {
+														vm.updateMessage(params.row.id)
+														vm.newMessageList.splice(params.index,1)
+											        }
+											    }
+											}, '标为已读')
+			                            ]);
+			                        }
+			                    }],
+								columnsOldMessage:[
+											{
+								                title: '发送者ID',
+								                key: 'from'
+								            },
+								            {
+								                title: '发送者姓名',
+								                key: 'fromname'
+								            },
+											{
+											    title: '消息内容',
+											    key: 'content'
+											},
+											{
+											    title: '模块',
+											    key: 'type'
+											},
+								            {
+								                title: '操作',
+								                key: 'action',
+								                width: 150,
+								                align: 'center',
+								                render: (h, params) => {
+								                    return h('div', [
+								                        h('Button', {
+								                            props: {
+								                                type: 'error',
+								                                size: 'small'
+								                            },
+								                            on: {
+								                                click: () => {
+																	vm.removeMessage(params.row.id)
+																	vm.oldMessageList.splice(params.index,1)
+								                                }
+								                            }
+								                        }, '删除'),
+														h('Button', {
+														    props: {
+														        type: '',
+														        size: 'small'
+														    },
+														    on: {	
+														    	click: () => {
+																	if(params.row.type=="攻略模块")
+																	{
+														        	window.location.href = '/strategy/getAStrategy?id='+params.row.about_id;
+														        }
+														        else if(params.row.type=="交流模块"){ 	
+															        	window.location.href = '/note/getANote?id='+params.row.about_id;
+														        	}
+														    }
+															}
+														}, '查看')
+								                    ]);
+								                }
+								            }]   
+				},
+				
+				methods:{
+					getUser(){
+						$.get('/user/getAUser',function(data){
+							vm.user = data;
+						})
+					},
+					handleSuccess(){
+						this.getUser();
+					},
+					updateUser(){
+						$.get('/user/updateUser',this.user,function(data){
+							location.reload()
+						})
+					},
+					
+					getMyStrategy(){
+						$.get('/user/getMyStrategy',function(data){
+							vm.strategyList = data;
+						})
+					},
+					getMyNote(){
+						$.get('/user/getMyNote',function(data){
+							vm.noteList = data;
+						})
+					},
+					getMyAnswer1(){
+						$.get('/user/getMyAnswer1',function(data){
+							vm.answerList1 = data;
+						})
+					},
+					getMyAnswer2(){
+						$.get('/user/getMyAnswer2',function(data){
+							vm.answerList2 = data;
+						})
+					},
+					getNewMessage(){
+						$.get('/user/getNewMessage',function(data){
+							vm.newMessageList = data;
+						})
+					},
+					getOldMessage(){
+						$.get('/user/getOldMessage',function(data){
+							vm.oldMessageList = data;
+						})
+					},
+					removeStrategy(id){
+						console.log(id)
+						$.get('/user/deleteStrategy',{id:id},function(data){
+							//location.reload()
+						})
+					},
+					removeNote(id){
+						console.log(id)
+						$.get('/user/deleteNote',{id:id},function(data){
+							//location.reload()
+						})
+					},
+					removeStrategyReply(id){
+						console.log(id)
+						$.get('/user/deleteStrategyReply',{id:id},function(data){
+							//location.reload()
+						})
+					},
+					removeNoteReply(id){
+						console.log(id)
+						$.get('/user/deleteNoteReply',{id:id},function(data){
+							//location.reload()
+						})
+					},
+					removeMessage(id){
+						console.log(id)
+						$.get('/user/deleteMessage',{id:id},function(data){
+							//location.reload()
+						})
+					},
+					updateMessage(id){
+						console.log(id)
+						$.get('/user/updateMessage',{id:id},function(data){
+							//location.reload()
+						}),
+						$.get('/user/getOldMessage',function(data){
+							vm.oldMessageList = data;
+						})
+					},
+				},
+				created() {
+					
+				},mounted(){
+					this.getUser();
+					this.getMyStrategy();
+					this.getMyNote();
+					this.getMyAnswer1();
+					this.getMyAnswer2();
+					this.getNewMessage();
+					this.getOldMessage();
+				}
+			})
+		</script>
+	</body>
+</html>

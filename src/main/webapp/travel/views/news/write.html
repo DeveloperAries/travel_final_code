@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>带你去旅行-写资讯</title>
+		<%include("/travel/views/include.html"){}%>
+		<link  rel="stylesheet" type="text/css" href="news.css" />
+		<style type="text/css">
+			[v-cloak] {
+			  display: none;
+			}
+			.layout{
+			    border: 1px solid #d7dde4;
+			    background: #f5f7f9;
+			    position: relative;
+			    border-radius: 4px;
+			    overflow: hidden;
+			}
+			.layout-logo{
+			    width: 250px;
+			    height: 50px;
+			    background-image: url(/travel/images/logo_font.png);
+				background-size: 100% 100%;
+			    border-radius: 3px;
+			    float: left;
+			    position: relative;
+			    top: 5px;
+			   left:100px;
+			}
+			.layout-nav{
+			    width: 580px;
+			    margin: 0 auto;
+			}
+			.layout-footer-center{
+			    text-align: center;
+			}
+			
+			.ivu-menu-white.ivu-menu-horizontal .ivu-menu-item-active, .ivu-menu-white.ivu-menu-horizontal 
+			.ivu-menu-item:hover, .ivu-menu-white.ivu-menu-horizontal .ivu-menu-submenu-active, 
+			.ivu-menu-white.ivu-menu-horizontal .ivu-menu-submenu:hover {
+				color: #fff;
+				background: #f1ab41;
+				border-radius:5px ;
+			}
+			.w-e-text-container{
+				height: 500px !important;/*!important是重点，因为原div是行内样式设置的高度300px*/
+				z-index: 99 !important;
+			}
+			.ivu-select-dropdown {
+				z-index: 99999;
+			}
+			#con{ width:100%;height:650px;margin-left:150px;}
+			.a{ width:100%;height:600px}
+		</style>
+	</head>
+	<body onload=initial();>
+    <div class="layout" id="app" @click="hideSearch" v-cloak>
+        <layout >
+			<%include("/travel/views/writeHeader.html"){}%>
+			<div style="height:600px;width:100%">
+			<div style="float:left;height:500px;width:60%;margin-top: 70px;">
+				<div class="asidebox-hd">
+					<h1  style="float: left;margin-left:150px;">最新活动</h1>
+				<div style="float: right; margin-right: 20px; font-size:8px;">
+				<a style="float: left;text-decoration:none;font-size:8px;" @click="toActivityList()">更多></a>
+				</div>
+				</div>
+			<div id="con"><!--外层容器-->
+				<div class="a" v-for="r1 in act1">
+					<img :src="r1.img" style="height: 450px; object-fit: cover;width: 80%;border-radius:5px ;"><br/>
+					<a  style="height: 150px;width: 80% ;float: left;"  @click="toActivityContent(r1.id)" target="_self"><h3>{{r1.title}}</h3></a>
+				</div>
+				<div class="a" style="display:none" v-for="r2 in act2">
+					<img :src="r2.img" style="height: 450px; object-fit: cover;width: 80%;border-radius:5px ;"><br/>
+					<a  style="height: 150px;width: 80% ;float: left;"  @click="toActivityContent(r2.id)" target="_self"><h3>{{r2.title}}</h3></a>
+				</div>
+				<div class="a" style="display:none" v-for="r3 in act3">
+					<img :src="r3.img" style="height: 450px; object-fit: cover;width: 80%;border-radius:5px ;"><br/>
+					<a  style="height: 150px;width: 80% ;float: left;" @click="toActivityContent(r3.id)" target="_self"><h3>{{r3.title}}</h3></a>
+				</div>
+				<div class="a" style="display:none" v-for="r4 in act4">
+					<img :src="r4.img" style="height: 450px; object-fit: cover;width: 80%;border-radius:5px ;"><br/>
+					<a  style="height: 150px;width: 80% ;float: left;" @click="toActivityContent(r4.id)" target="_self"><h3>{{r4.title}}</h3></a>
+				</div>
+			</div>
+			</div>
+			<div style="float:right;height:600px;width:40%">
+				<i-col span="17">
+					<Card style="width:100%;height:580px;margin-top: 30px;margin-left: 30px;">
+						<div id="content">
+						<!-- 显示日期详情 -->
+						  <div id="detail">
+						       <div id="date_content"></div>
+						
+						       <div id="animal_year"></div>
+						        <!-- 显示时钟 -->
+						        <p id="clock"></p>
+						  </div>
+						  <form name="calender_content" style="margin-top: -15px;">
+						                  <table class="week">
+						                    <tbody>
+						                       <tr>
+						                          <td class="ch">
+						                                  <!-- 日历头部 -->
+						                                 <table>
+						                                     <tbody>
+						                                           <tr class="day">
+						                                                  <td>日</td>
+						                                                  <td>一</td>
+						                                                  <td>二</td>
+						                                                  <td>三</td>
+						                                                  <td>四</td>
+						                                                  <td>五</td>
+						                                                  <td>六</td>
+						                                              </tr>
+						                                         </tbody>
+						                                  </table>
+						                                  </tr>
+						                                  </td>
+						                                    <!-- 头部END -->
+						                                 
+						                 <!-- js动态的向表格写入日期 -->
+						                            <script>
+						                            var Num; //Num计算出日期位置
+						                            for(i=0;i<6;i++) {
+						
+						                                    document.write('<table id="cal-content"><tr>');
+						                                   
+						                             for(j=0;j<7;j++) {
+						                                Num = i*7+j;
+						                                document.write('<td id="SD' + Num +'" onclick="addDay(' + Num +')" ');
+						                        //周六 周日 假期样式设定
+						                              if(j == 0|| j == 6)
+						                              {
+						                                    document.write(' class="aorange"');
+						                               }else{
+						                                    document.write(' class="one"');
+						                              }
+						                                    document.write('title=""> </td>')
+						                             }
+						
+						                                document.write('</tr></table></td></tr><tr><td><table style="width:399;"><tr style="text-align:center"> ');
+						                           //农历
+						                           for(j=0;j<7;j++) {
+						                              Num = i*7+j;
+						                              document.write('<td id="LD' + Num +'" onclick="addDay(' + Num +')" class="bs" title=""> </td>')
+						
+						                           }
+						                              document.write('</tr></table></td></tr>');
+						                           
+						                         }
+						                         </script>  
+						             <!-- 生成日期 END    -->
+						                        </tr>
+						                     </table>
+						                   </td>
+						                </tr>   
+						              </tbody>
+						            </table>
+						             <table>
+						               <tbody>
+						                <tr>
+						                  <td class="sm">
+						                    <table class="table_head">
+						                      <tbody>
+						                      <tr>
+						                        <td> 
+						                        <!-- 选择年份菜单 -->
+						                          <div class="year_select">
+						                              <span onclick="BtN('year_d')"><img src="/travel/images/left.png"></span>
+						                                <select onchange="chaCld()" name="SY">
+						                                  <script>
+						                                     for(i=1900;i<2050;i++) 
+						                                    document.write('<option>'+i+"年")
+						                                  </script>
+						                                </select> 
+						                              <span onclick="BtN('year_a')"><img src="/travel/images/right.png"></span> 
+						                          </div>
+						                          <!-- 回到当天菜单 -->
+						                          <div  class="home_select">
+						                               <span onclick="BtN('')"><img src="/travel/images/2.png" style="width:26px;height:26px"></span>
+						                          </div>
+						
+						                          <!-- 选择月份菜单 -->
+						                              <div style="display:inline-block;">
+						                                  <span onclick="BtN('month_d')"><img src="/travel/images/left.png"></span>
+						                                   <select onchange="chaCld()" name="SM">
+						                                    <script>
+						                                    for(i=1;i<13;i++) document.write('<option>'+i+"月")
+						                                    </script>
+						                                    </select> 
+						                                  <span onclick="BtN('month_a')"><img src="/travel/images/right.png"></span>
+						                              </div>
+						                           </td>
+						                       </tr>
+						                     </tbody>
+						                    </table>
+						                  </td>
+						                </tr> 
+						             </tbody>
+						           </table>
+						      </form>
+						   </div>
+						</Card>
+				</i-col>
+			</div>
+		</div><br/><br/><br/>
+			<!-- <div class="search-group">
+            <i-input search enter-button placeholder="攻略搜索..." @on-search="getList()"  @on-change="getCity" v-model="page.searchValue" />
+        </div> -->
+		
+            <content :style="{margin: '0px auto',width:'90%', background: '#fff', minHeight: '500px'}" >
+				
+				<row style="padding-bottom: 20px;">
+					
+					<i-col span="7">
+						<Card style="width:310px;margin: 10px;">
+							<iframe src="//www.seniverse.com/weather/weather.aspx?uid=U1399E59A9&cid=CHHN000000&l=zh-CHS&p=SMART&a=1&u=C&s=12&m=2&x=1&d=5&fc=&bgc=&bc=&ti=0&in=0&li=" frameborder="0" scrolling="no" width="280" height="300" allowTransparency="true"></iframe>
+							</Card>
+						<Card style="width:310px;margin: 10px;">
+						<div class="asidebox box-news">
+							<div class="asidebox-hd">
+								<h3  style="float: left;">带你去旅行网最新资讯</h3>
+							<Button-Group type="button" style="float: right;"> 
+							<i-Button label="large" @click="getRank('1')">日</i-Button> 
+							<i-Button label="default" @click="getRank('7')">周</i-Button> 
+							<i-Button label="small" @click="getRank('30')">月</i-Button> 
+							</Button-Group>
+							</div>
+							<br/><br/>
+							<ul class="asidebox-bd">
+								<li v-for="(r,index) in rank"><span >{{index+1}}，</span><a @click="toNewsContent(r.id)">{{r.title}}</a></li>
+							</ul>
+						</div>
+						</Card>
+					</i-col>
+					
+					<i-col span="17">	
+					<affix :offset-top="150" style="position: absolute;right:-50px ;top:20px">
+						<Button-Group vertical>
+							<i-Button icon="md-arrow-round-up" @click="toTop"></i-Button>
+						</Button-Group>
+					</affix>
+					<br/><br/>
+						<div style="color: #000000; margin-top: 15px; font-size:15px;">
+							<h1  style="float: left;">景区特价大放送</h1>
+							<div style="float: right; margin-right: 20px; font-size:8px;">
+								<br/>
+							</div>
+						</div>
+						<div style="color: #CCCCCC;margin: 80px 20px; font-size:18px ;" v-show="items.length<1">
+							<p>没有更多内容了...</p>
+						</div>
+						<br /><br /><br /><hr /><br />
+						<div class="tn-item clearfix"  v-for="item in items">
+						    <div class="tn-image">
+						         <img :src="item.img" style="height: 150px; object-fit: cover;width: 220px;border-radius:5px ;">
+						    </div>
+						    <div class="tn-wrapper">
+								<dl>
+								    <dt>
+								        <a  @click="toSpotContent(item.id)" target="_self">{{item.title}}</a>
+								    </dt>
+								    <dd>
+								        <a  @click="toSpotContent(item.id)" target="_self"> {{item.simple_show}}</a>
+								    </dd>
+								   </dl>
+									<span class="tn-nums"><Icon type="ios-alarm" size="18" color="#888"></icon>{{item.post_time | formatDate}}</span>
+						        </div>
+						    </div>
+				
+				<Page :total="page.pageTotal" :page-size="page.pageSize"
+					placement="top" @on-change="handlePage"
+					@on-page-size-change='handlePageSize' show-sizer show-elevator
+					show-total style="margin-top: 30px;" /> </i-col> </row> </content>
+            <%include("/travel/views/footer.html"){}%>
+        </layout>
+    </div>
+<script>
+    var vm = new Vue({
+    	el:'#app',
+    	data:{
+			x:'3',
+			searchShow:false,
+			searchData:[],
+			value2:0,
+			page:{
+				 pageTotal: 0,
+				 pageNum: 1,
+				 pageSize: 10,
+				 searchValue:'',
+			},
+			items:[],
+			loveColor:'#f42121',
+			rank:[],
+			act1:[],
+			act2:[],
+			act3:[],
+			act4:[],
+		},
+    	methods:{
+    		getCity(param){
+				if(!param.data){
+					return;
+				}
+				$.get("https://search.heweather.net/find?location="+param.data+"&key=HE1903112121251629&number=8",function(data){
+					vm.searchData = [];
+					vm.searchShow = false;
+					if(data.HeWeather6[0].status=="ok"){
+						vm.searchShow = true;
+						data.HeWeather6[0].basic.forEach(function(e){
+							vm.searchData.push(e)
+						})
+					}
+				})
+			},
+			hideSearch(){
+				vm.searchShow = false;
+			},
+			setSearchVal(city){
+				vm.page.searchValue = city;
+			},
+			handlePage(value) {
+				console.log(value)
+			  this.page.pageNum = value
+			  this.getList()
+			},
+			handlePageSize(value) {
+			  this.page.pageSize = value
+			  this.getList()
+			},
+			getSpotList(){
+				$.get('/news/getSpotList',this.page,function(data){
+					vm.items = data.list;
+					vm.page.pageTotal = data.totalRow;
+					console.log(vm.items)
+				})
+			},
+			toSpotContent(id){
+				window.location.href = '/news/getASpot?id='+id;
+			},
+			toActivityContent(id){
+				window.location.href = '/news/getANewactivity?id='+id;
+			},
+			toNewsContent(id){
+				window.location.href = '/news/getANews?id='+id;
+			},
+			toActivityList(){
+				window.location.href = '/news/activityList';
+			},
+			getRank(dateval){
+				$.get('/news/getRank',{dateval:dateval},function(data){
+				   vm.rank = data;
+				})
+			},
+			getLastOne(){
+				$.get('/news/getLastOne',function(data){
+				   vm.act1 = data;
+				})
+			},
+			getLastTwo(){
+				$.get('/news/getLastTwo',function(data){
+				   vm.act2 = data;
+				})
+			},
+			getLastThree(){
+				$.get('/news/getLastThree',function(data){
+				   vm.act3 = data;
+				})
+			},
+			getLastFour(){
+				$.get('/news/getLastFour',function(data){
+				   vm.act4 = data;
+				})
+			},
+
+			toTop(){
+				$("html,body").animate({scrollTop:0},500);
+			},
+    	},
+    	created() {
+    		
+    	},
+		filters:{
+		    formatDate:function (val) {
+		        var date=new Date(val);
+		        var year=date.getFullYear();
+				var month= date.getMonth()+1<10 ? "0"+(date.getMonth()+1) : date.getMonth()+1;
+				var day=date.getDate()<10 ? "0"+date.getDate() : date.getDate();
+				var hours=date.getHours()<10 ? "0"+date.getHours() : date.getHours();
+				var minutes=date.getMinutes()<10 ? "0"+date.getMinutes() : date.getMinutes();
+				var seconds=date.getSeconds()<10 ? "0"+date.getSeconds() : date.getSeconds();
+		return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;
+		             }
+		    },
+		mounted(){
+			this.getSpotList();
+			this.getRank(30);
+			this.getLastOne();
+			this.getLastTwo();
+			this.getLastThree();
+			this.getLastFour();
+		}
+    })
+</script>
+<script type="text/javascript">
+
+function G(e){return document.getElementById(e);}
+function myPlayer(con, child, speed){
+    var ts = G(con).getElementsByTagName(child),//获取容器内需要轮流显示的子元素：这里是 div
+        timer,k=0;
+        var timer = setInterval(function(){//定义时间控制器
+            for(var m=0;m<ts.length;m++){ts[m].style.display="none";}//先隐藏全部，此处效率降低，可以考虑不用循环
+            ts[k].style.display="";//显示需要显示的
+            if(k>ts.length-2){
+               k=0;
+            }else{
+               k++;
+            }
+        },speed);
+}
+myPlayer("con","div",2000);//调用，参数一外层元素ID，参数二循环元素名称，间隔时间：秒数的1000倍
+</script>
+<script type="text/javascript">
+if (top.location != self.location) {
+			var tempwindow = window.open(location.href);
+			window.parent.tabsClose();
+
+		}
+</script>
+	</body>
+</html>

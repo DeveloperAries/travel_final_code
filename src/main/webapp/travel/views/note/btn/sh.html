@@ -1,0 +1,47 @@
+<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'eova-icon733',plain:true" onclick="sh()">${button.name!''}</a>
+<link rel="stylesheet" type="text/css" href="/travel/plugins/layui/css/layui.css"/>
+<script src="/travel/plugins/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    var sh = function () {
+    	var $grid = $('#master_grid');
+        if (isSelected($grid)) {
+	        var row = $.getWidgetSelected($grid);
+			
+			layui.use('layer', function(){
+			  var layer = layui.layer;
+			  if(row.status_val!=1){
+			  	layer.msg("已审核")
+			  	return;
+			  }
+			  layer.open({
+				  type: 1, 
+				  title:'评论审核',
+				  closeBtn: 1,
+				  content: row.content ,//这里content是一个普通的String
+				  area: ['80%', '80%'],
+				  btn: ['通过', '不通过'],
+				  yes: function(index, layero){
+					 shNote(2)
+					 layer.close(index);
+					 $.widgetReLoad($grid);
+				  }
+				  ,btn2: function(index, layero){
+					shNote(3)
+					layer.close(index);
+					$.widgetReLoad($grid);
+				  }
+				});
+				
+				function shNote(val){
+					$.get('/note/shNote',{val:val,id:row.id},function(data){
+						
+					})
+				}
+			});              
+     
+        }
+    };
+	
+	
+	
+</script>

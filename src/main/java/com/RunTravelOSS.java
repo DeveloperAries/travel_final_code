@@ -1,0 +1,22 @@
+package com;
+
+import com.jfinal.core.JFinal;
+
+/**
+ * 鼠标右键->Run As Java Application
+ *
+ */
+public class RunTravelOSS {
+	public static void main(String[] args) {
+		/**
+		 * 特别注意：Eclipse 之下建议的启动方式
+		 */
+		System.setProperty("org.eclipse.jetty.server.Request.maxFormContentSize", "900000000");
+		JFinal.start("src/main/webapp", 80, "/", 6);
+
+		/**
+		 * 特别注意：IDEA 之下建议的启动方式，仅比 eclipse 之下少了最后一个参数
+		 */
+		// JFinal.start("src/main/webapp", 80, "/");
+	}
+}

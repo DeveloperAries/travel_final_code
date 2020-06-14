@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>带你去旅行-最新活动</title>
+		<%include("/travel/views/include.html"){}%>
+	</head>
+	<body onload=initial();>
+	<div class="layout" id="app" @click="hideSearch" v-cloak>
+	    <layout >
+			<%include("/travel/views/otherHeader.html"){}%>
+		            <content :style="{margin: '0px auto',width:'90%', background: '#fff', minHeight: '500px'}" >
+					
+					<row style="padding-bottom: 20px;">
+						
+						<i-col span="17" style="margin-left:180px;">	
+						<br/><br/>
+							<div style="color: #000000; margin-top: 15px; font-size:15px;">
+								<h1  style="float: left;">最新活动</h1>
+							</div>
+							<div style="color: #CCCCCC;margin: 80px 20px; font-size:18px ;" v-show="items.length<1">
+								<p>没有更多内容了...</p>
+							</div>
+							<br /><br /><br /><hr /><br />
+							<div class="tn-item clearfix"  v-for="item in items">
+							    <div class="tn-image">
+							         <img :src="item.img" style="height: 150px; object-fit: cover;width: 220px;border-radius:5px ;">
+							    </div>
+							    <div class="tn-wrapper" >
+									<dl>
+									    <dt>
+									        <a  @click="toActivityContent(item.id)" target="_self">{{item.title}}</a>
+									    </dt>
+									    <dd>
+									        <a  @click="toActivityContent(item.id)" target="_self"> {{item.simple_show}}</a>
+									    </dd>
+									   </dl>
+										<span class="tn-nums"><Icon type="ios-alarm" size="18" color="#888"></icon>{{item.post_time | formatDate}}</span>
+							        </div>
+							    </div>
+					
+					<Page :total="page.pageTotal" :page-size="page.pageSize"
+						placement="top" @on-change="handlePage"
+						@on-page-size-change='handlePageSize' show-sizer show-elevator
+						show-total style="margin-top: 30px;" /> </i-col> </row> </content>
+		        <%include("/travel/views/footer.html"){}%>
+		    </layout>
+		</div>
+	<script>
+	    var vm = new Vue({
+	    	el:'#app',
+	    	data:{
+				x:'3',
+				searchShow:false,
+				searchData:[],
+				value2:0,
+				page:{
+					 pageTotal: 0,
+					 pageNum: 1,
+					 pageSize: 10,
+					 searchValue:'',
+				},
+				items:[],
+			},
+	    	methods:{
+	    		getCity(param){
+					if(!param.data){
+						return;
+					}
+					$.get("https://search.heweather.net/find?location="+param.data+"&key=HE1903112121251629&number=8",function(data){
+						vm.searchData = [];
+						vm.searchShow = false;
+						if(data.HeWeather6[0].status=="ok"){
+							vm.searchShow = true;
+							data.HeWeather6[0].basic.forEach(function(e){
+								vm.searchData.push(e)
+							})
+						}
+					})
+				},
+				hideSearch(){
+					vm.searchShow = false;
+				},
+				setSearchVal(city){
+					vm.page.searchValue = city;
+				},
+				handlePage(value) {
+					console.log(value)
+				  this.page.pageNum = value
+				  this.getList()
+				},
+				handlePageSize(value) {
+				  this.page.pageSize = value
+				  this.getList()
+				},
+				getActivityList(){
+					$.get('/news/getActivityList',this.page,function(data){
+						vm.items = data.list;
+						vm.page.pageTotal = data.totalRow;
+						console.log(vm.items)
+					})
+				},
+	
+				toActivityContent(id){
+					window.location.href = '/news/getANewactivity?id='+id;
+				},
+	    	},
+	    	created() {
+	    		
+	    	},
+			filters:{
+			    formatDate:function (val) {
+			        var date=new Date(val);
+			        var year=date.getFullYear();
+					var month= date.getMonth()+1<10 ? "0"+(date.getMonth()+1) : date.getMonth()+1;
+					var day=date.getDate()<10 ? "0"+date.getDate() : date.getDate();
+					var hours=date.getHours()<10 ? "0"+date.getHours() : date.getHours();
+					var minutes=date.getMinutes()<10 ? "0"+date.getMinutes() : date.getMinutes();
+					var seconds=date.getSeconds()<10 ? "0"+date.getSeconds() : date.getSeconds();
+			return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;
+			             }
+			    },
+			mounted(){
+				this.getActivityList();
+			}
+	    })
+	</script>
+	<script type="text/javascript">
+	if (top.location != self.location) {
+				var tempwindow = window.open(location.href);
+				window.parent.tabsClose();
+	
+			}
+	</script>
+		</body>
+	</html>

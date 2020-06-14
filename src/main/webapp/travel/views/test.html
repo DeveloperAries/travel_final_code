@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+		<meta charset="utf-8">
+		<title>带你去旅行-首页</title>
+		<link  rel="stylesheet" type="text/css" href="/travel/plugins/iview/dist/styles/iview.css"/>
+		<script src="/travel/plugins/iview/dist/iview.js" type="text/javascript" charset="utf-8"></script>
+		<script src="/travel/js/vue.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+ <div class="layout" id="app" @click="hideSearch" v-cloak>
+ <layout >
+<template>
+    <RadioGroup v-model="phone">
+        <Radio label="apple">
+            <Icon type="logo-apple"></Icon>
+            <span>Apple</span>
+        </Radio>
+        <Radio label="android">
+            <Icon type="logo-android"></Icon>
+            <span>Android</span>
+        </Radio>
+        <Radio label="windows">
+            <Icon type="logo-windows"></Icon>
+            <span>Windows</span>
+        </Radio>
+    </RadioGroup>
+    <RadioGroup v-model="animal">
+       <Radio :label="'金斑蝶'"></Radio>
+       <Radio :label="'爪哇犀牛'"></Radio>
+       <Radio :label="'印度黑羚'"></Radio>
+    </RadioGroup>
+</template>
+ </layout>
+ </div>
+<script>
+var vm = new Vue({
+	el:'#app',
+        data () {
+            return {
+                phone: 'apple',
+                animal: '爪哇犀牛'
+            }
+        
+    }
+})
+</script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>新增活动</title>
+		<%include("/travel/views/include.html"){}%>
+		<!--  <script type="text/javascript" src="/plugins/wangEditor-3.1.1/release/wangEditor.min.js"></script>-->
+	</head>
+	<style type="text/css">
+		[v-cloak] {
+		  display: none;
+		}
+		.layout{
+		    border: 1px solid #d7dde4;
+		    background: #f5f7f9;
+		    position: relative;
+		    border-radius: 4px;
+		    overflow: hidden;
+		}
+		.layout-logo{
+		    width: 250px;
+		    height: 50px;
+		    background-image: url(/travel/images/logo_font.png);
+			background-size: 100% 100%;
+		    border-radius: 3px;
+		    float: left;
+		    position: relative;
+		    top: 5px;
+		   left:100px;
+		}
+		.layout-nav{
+		    width: 580px;
+		    margin: 0 auto;
+		}
+		.layout-footer-center{
+		    text-align: center;
+		}
+		
+		.ivu-menu-white.ivu-menu-horizontal .ivu-menu-item-active, .ivu-menu-white.ivu-menu-horizontal 
+		.ivu-menu-item:hover, .ivu-menu-white.ivu-menu-horizontal .ivu-menu-submenu-active, 
+		.ivu-menu-white.ivu-menu-horizontal .ivu-menu-submenu:hover {
+			color: #fff;
+			background: #f1ab41;
+			border-radius:5px ;
+		}
+		.w-e-text-container{
+			height: 500px !important;/*!important是重点，因为原div是行内样式设置的高度300px*/
+			z-index: 99 !important;
+		}
+		.ivu-select-dropdown {
+			z-index: 99999;
+		}
+	</style>
+	<body>
+		
+		   <div class="layout" id="app" v-cloak>
+			   
+		    <layout >
+				<%include("/travel/views/writeHeader.html"){}%>
+				 <img :src="image.url" style="height: 350px;object-fit: cover;"> 
+				 <content :style="{margin: '0px auto',width:'60%', background: '#fff', minHeight: '500px'}" >
+				 	<i-Button  type="dashed" v-show="image.imageShow=='btn'" @click="showKK">重新上传标题图片</i-Button><br/>
+				 	
+				 	<Upload style="margin-top: 10px;" v-show="image.imageShow=='kk'"
+				 		type="drag"
+				 		:show-upload-list="false"
+				 		:format="['jpg','jpeg','png']"
+				         :max-size="2048"
+				 		:on-success="handleSuccess"
+				 		action="/news/getImages">
+				 		<div style="padding: 20px 0">
+				 			<Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
+				 			<p>上传活动封面</p>
+				 		</div>
+				 	</Upload>
+					 <i-input v-model="newactivity.title" prefix="ios-text" placeholder="请输入标题" style="width: 500px;margin: 10px auto;" ></i-input>
+					<div id="editor" >
+					</div>
+					<br/>
+				
+					<br/>
+					
+					<i-Button type="success" @click="publish">立即发布</i-Button>
+					<i-Button type="warning">取消</i-Button><br/><br/>
+					</content>
+					
+					<%include("/travel/views/footer.html"){}%>
+					</layout>
+				</div>
+				
+				<script type="text/javascript">
+									   var editor ;
+									   var vm = new Vue({
+										el:'#app',
+										data:{
+											x:'2',
+											count: [],
+											image:{
+												url:'',
+												imageShow:'kk'
+											},
+											newactivity:{
+												title:'',
+												img:'',
+												content:'',
+											},
+											
+										},
+										methods:{
+												 handleSuccess (res, file) {
+													 vm.image.url = res;
+													 vm.image.imageShow = 'btn';
+												},
+												showKK(){
+													vm.image.imageShow = 'kk';
+													vm.image.url = '';
+												},
+												publish(){
+													vm.newactivity.img = vm.image.url;
+													vm.newactivity.content = editor.txt.html();
+													var adds = '';
+													for(let e of vm.count){
+														adds += e+'-';
+													}
+													if(vm.count.length>0){
+														adds = adds.substr(0,adds.length-1)
+													}
+													$.post('/news/saveNewactivity',vm.newactivity,function(data){
+														if(data.success){
+															location.href = "/news/toMsg";
+														}else{
+															this.$Message.error(data.msg);
+														}
+													})
+													
+												}
+										},
+										created() {
+											
+										}
+									})
+									
+								</script>
+								<script type="text/javascript">
+				    			var E = window.wangEditor
+				   			 	var editor = new E('#editor')
+				    			editor.customConfig.uploadImgShowBase64 = true   // 使用 base64 保存图片
+				    			editor.create()
+								</script>
+					</body>
+				</html>
+				

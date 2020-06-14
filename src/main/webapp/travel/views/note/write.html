@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>写帖子</title>
+		<%include("/travel/views/include.html"){}%>
+		<!--  <script type="text/javascript" src="/plugins/wangEditor-3.1.1/release/wangEditor.min.js"></script>-->
+	</head>
+	<style type="text/css">
+		[v-cloak] {
+		  display: none;
+		}
+		.w-e-text-container{
+			height: 500px !important;/*!important是重点，因为原div是行内样式设置的高度300px*/
+			z-index: 99 !important;
+		}
+		.ivu-select-dropdown {
+			z-index: 99999;
+		}
+	</style>
+	<body>
+		
+		   <div class="layout" id="app" v-cloak>
+			   
+		    <layout >
+				<%include("/travel/views/otherHeader.html"){}%>
+				
+				<img :src="image.url" style="height: 350px;object-fit: cover;"> 
+		        <content :style="{margin: '0px auto',width:'60%', background: '#fff', minHeight: '500px'}" >
+					<i-Button  type="dashed" v-show="image.imageShow=='btn'" @click="showKK">重新上传标题图片</i-Button><br/>
+					
+					<Upload style="margin-top: 10px;" v-show="image.imageShow=='kk'"
+						type="drag"
+						:show-upload-list="false"
+						:format="['jpg','jpeg','png']"
+                        :max-size="2048"
+						:on-success="handleSuccess"
+						action="/note/getImages">
+						<div style="padding: 20px 0">
+							<Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
+							<p>来张镇楼图吧！</p>
+						</div>
+					</Upload>
+					
+						
+					 <i-input v-model="note.title" prefix="ios-text" placeholder="请输入标题" style="width: 500px;margin: 10px auto;" ></i-input>
+					<div id="editor" >
+					</div>
+					
+					<br/>
+				
+					<br/><br/>
+					
+					 <i-Button type="success" @click="publish">立即发布</i-Button>
+    <i-Button type="warning">取消</i-Button><br/><br/>
+					</content>
+					
+					<%include("/travel/views/footer.html"){}%>
+					</layout>
+				</div>
+				
+				<script type="text/javascript">
+					   var editor ;
+					   var vm = new Vue({
+						el:'#app',
+						data:{
+							x:'3',
+							count: [],
+							image:{
+								url:'',
+								imageShow:'kk'
+							},
+							note:{
+								title:'',
+								content:'',
+								headimg:'',
+							},
+							
+						},
+						methods:{
+								 handleSuccess (res, file) {
+									 vm.image.url = res;
+									 vm.image.imageShow = 'btn';
+								},
+								showKK(){
+									vm.image.imageShow = 'kk';
+									vm.image.url = '';
+								},
+								publish(){
+									vm.note.headimg = vm.image.url;
+									vm.note.content = editor.txt.html();
+									var adds = '';
+									for(let e of vm.count){
+										adds += e+'-';
+									}
+									if(vm.count.length>0){
+										adds = adds.substr(0,adds.length-1)
+									}
+									$.post('/note/saveNote',vm.note,function(data){
+										if(data.success){
+											location.href = "/note/toMsg";
+										}else{
+											this.$Message.error(data.msg);
+										}
+									})
+									
+								}
+						},
+						//mounted:function(){//插件使用的wangEditor，简单美观
+								//var E = window.wangEditor
+								//editor = new E('#editor')
+						//        editor.customConfig.uploadImgServer = WWW_URL+'/score/uploadDetailPic';
+						       // editor.customConfig.uploadImgServer = '/upload'  // 上传图片到服务器
+								//editor.customConfig.uploadImgShowBase64 = true   // 使用 base64 保存图片
+								//editor.customConfig.showLinkImg = false
+								///editor.customConfig.zIndex = 100
+								//editor.create();
+						   //    var E = window.wangEditor
+    						//   var editor = new E('#editor')
+                           //    editor.customConfig.uploadImgShowBase64 = true   // 使用 base64 保存图片
+                            //   editor.create()
+					//	},
+
+						created() {
+							
+						}
+					})
+					
+				</script>
+				<script type="text/javascript">
+    			var E = window.wangEditor
+   			 	var editor = new E('#editor')
+    			editor.customConfig.uploadImgShowBase64 = true   // 使用 base64 保存图片
+    			editor.create()
+				</script>
+	</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>TA的主页</title>
+		<%include("/travel/views/include.html"){}%>
+	</head>
+	<body>
+		
+		<div id="app">
+			
+			
+			 <Layout>
+				  	<%include("/travel/views/otherHeader.html"){}%>
+				  <div style="width: 60%;margin: 20px auto;">
+				 
+				  
+				  <div class="top">
+					  
+					   <row>
+							<i-col span="8">
+							<img :src="user.img?user.img:'https://i.loli.net/2017/08/21/599a521472424.jpg'" style="height: 280px; object-fit: cover; width: 280px; border-radius: 5px;" />
+							</i-col>
+							<i-col span="8">
+								<div style="margin: 10px 20px;font-size:28px ;">${user.name}</div>
+								<div style="font-size: 18px;margin: 20px;border-bottom: #0070A9 solid 1px;">${user.sign}
+								</div>
+								 <Modal
+									title="修改个人信息"
+									v-model="modal9"
+									:styles="{top: '120px',padding:'20px'}"
+									@on-ok="updateUser">
+									<i-input prefix="ios-contact" placeholder="昵称"  v-model="user.name" style="margin: 20px;width: 85%;"></i-input>
+									<i-input  type="textarea" placeholder="个性签名" v-model="user.sign"   style="margin: 20px;width: 85%;"></i-input>
+								</Modal>
+							</i-col>
+						</row>
+						<row>
+							 <Tabs type="card">
+								<Tab-Pane label="ta的攻略"><i-table border :columns="columnsStrategy" :data="strategyList"></i-table></Tab-Pane>
+								<Tab-Pane label="ta的发帖"><i-table border :columns="columnsNote" :data="noteList"></i-table></Tab-Pane>
+							</Tabs>
+					    </row>
+					
+				  </div>
+				 
+				
+				 </div>
+				   <%include("/travel/views/footer.html"){}%>
+			</Layout>
+		</div>
+		
+		<script type="text/javascript">
+			var vm = new Vue({
+				el:'#app',
+				data:{
+					x:"0",
+					modal9:false,
+					user:{},
+					strategyList:[],
+					noteList:[],
+					columnsStrategy:[
+						 {
+                        title: '标题',
+                        key: 'title'
+                    },
+					{
+					    title: '阅读量',
+					    key: 'readme'
+					},
+					{
+					    title: '点赞',
+					    key: 'laud'
+					},
+                    {
+                        title: '操作',
+                        key: 'action',
+                        width: 150,
+                        align: 'center',
+                        render: (h, params) => {
+                            return h('div', [
+                                h('Button', {
+                                    props: {
+                                        type: 'success',
+                                        size: 'small'
+                                    },
+                                    on: {
+                                        click: () => {
+                                        	window.location.href = '/strategy/getAStrategy?id='+params.row.id;
+                                        }
+                                    }
+                                }, '查看')
+                            ]);
+                        }
+                    }],
+					columnsNote:[
+									 {
+			                        title: '标题',
+			                        key: 'title'
+			                    },
+								{
+								    title: '阅读量',
+								    key: 'readme'
+								},
+								{
+								    title: '点赞',
+								    key: 'laud'
+								},
+			                    {
+			                        title: '操作',
+			                        key: 'action',
+			                        width: 150,
+			                        align: 'center',
+			                        render: (h, params) => {
+			                            return h('div', [
+			                                h('Button', {
+			                                    props: {
+			                                        type: 'success',
+			                                        size: 'small'
+			                                    },
+			                                    on: {
+			                                        click: () => {
+			                                        	window.location.href = '/note/getANote?id='+params.row.id;
+			                                        }
+			                                    }
+			                                }, '查看')
+			                            ]);
+			                        }
+			                    }]
+								
+				},
+				
+				methods:{
+					getUser(){
+						$.get('/user/getOtherUser',{userid:${user.id}},function(data){
+							vm.user = data;
+						})
+					},
+					handleSuccess(){
+						this.getUser();
+					},
+					updateUser(){
+						$.get('/user/updateUser',this.user,function(data){
+							location.reload()
+						})
+					},
+					
+					getOtherStrategy(){
+						$.get('/user/getOtherStrategy',{userid:${user.id}},function(data){
+							vm.strategyList = data;
+						})
+					},
+					getOtherNote(){
+						$.get('/user/getOtherNote',{userid:${user.id}},function(data){
+							vm.noteList = data;
+						})
+					},
+					remove(id){
+						console.log(id)
+						$.get('/user/deleteStrategy',{id:id},function(data){
+							//location.reload()
+						})
+					}
+				},
+				created() {
+					
+				},mounted(){
+					this.getUser();
+					this.getOtherStrategy();
+					this.getOtherNote();
+				}
+			})
+		</script>
+	</body>
+</html>

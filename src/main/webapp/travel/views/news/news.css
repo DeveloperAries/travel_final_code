@@ -1,0 +1,45 @@
+[v-cloak] {
+		  display: none;
+		}
+		.layout{
+		    border: 1px solid #d7dde4;
+		    background: #fff;
+		    position: relative;
+		    border-radius: 4px;
+		    overflow: hidden;
+		}
+		.ivu-layout{
+			background: #fff;
+		}
+		.layout-logo{
+		    width: 150px;
+		    height: 50px;
+		    background-image: url(/travel/images/logo_font.png);
+			background-size: 100% 100%;
+		    border-radius: 3px;
+		    float: left;
+		    position: relative;
+		    top: 5px;
+		   left: 300px;
+		}
+		.layout-nav{
+		    width: 480px;
+		    margin: 0 auto;
+		}
+		.layout-footer-center{
+		    text-align: center;
+		}
+		.ivu-menu-dark.ivu-menu-horizontal .ivu-menu-item-active, .ivu-menu-dark.ivu-menu-horizontal 
+		.ivu-menu-item:hover, .ivu-menu-dark.ivu-menu-horizontal .ivu-menu-submenu-active, 
+		.ivu-menu-dark.ivu-menu-horizontal .ivu-menu-submenu:hover {
+			color: #fff;
+			background: #f1ab41;
+			border-radius:5px ;
+		}
+		.w-e-text-container{
+			height: 500px !important;/*!important是重点，因为原div是行内样式设置的高度300px*/
+			z-index: 99 !important;
+		}
+		.ivu-select-dropdown {
+			z-index: 99999;
+		}

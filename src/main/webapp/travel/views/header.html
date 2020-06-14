@@ -1,0 +1,65 @@
+  
+  
+  <header :style="{textAlign: 'center'}">
+	  <i-menu mode="horizontal" theme="white" :active-name="x" >
+			<div class="layout-logo"></div>
+			<div class="layout-nav" >
+				<a href="/fIndex">
+				<menu-item name="1">
+					<Icon type="ios-navigate"></Icon>
+					首页
+				</menu-item>
+				</a>
+				<a href="/strategy/list">
+				<menu-item name="2">
+					<Icon type="ios-keypad"></Icon>
+					旅游攻略
+				</menu-item>
+				</a>
+				<a href="/news/list">
+				<menu-item name="3">
+					<Icon type="ios-analytics"></Icon>
+					新闻资讯
+				</menu-item>
+				</a>
+				<a href="/note/list">
+				<menu-item name="4">
+					<Icon type="ios-paper"></Icon>
+					交流问答
+				</menu-item>
+				</a>
+				
+			</div>
+			
+			  <dropdown trigger="click" style="margin-right: 100px;">
+				  <% if(session.user!=null){%>
+					<a href="javascript:void(0)" style="color: #000000;">
+						${session.user.name!"用户"}&nbsp;&nbsp;
+						<avatar src="${session.user.img ! "https://i.loli.net/2017/08/21/599a521472424.jpg"}" />
+					</a>
+					<dropdown-menu slot="list" >
+						<a href="/strategy/toWrite" style="color:#4C4C4C"><dropdown-item>写游记</dropdown-item></a>
+						<a href="/user/toMyCenter" style="color:#4C4C4C"><dropdown-item>个人中心</dropdown-item></a>
+						<a href="/user/toMyCenter" style="color:#4C4C4C"><dropdown-item>我的问答</dropdown-item></a>
+						<a href="/user/toPwd" style="color:#4C4C4C"><dropdown-item>修改密码</dropdown-item></a>
+						<a href="/user/loginOut" style="color:#4C4C4C"><dropdown-item>注销</dropdown-item></a>
+					</dropdown-menu>
+					<%}else{%>
+					<a href="/user/fLogin" style="color: #ff9d00;">
+						登录&nbsp;&nbsp;
+					</a>
+					<a href="/user/fRegist" style="color: #ff9d00;">
+						注册&nbsp;&nbsp;
+					</a>
+					<%}%>
+				</dropdown>
+				<div class="badge-div">
+				<!-- 根据接口返回是否有新消息显示小红点 -->
+				 <Badge :count="newMessageCount" >
+					<Icon type="ios-notifications-outline" size="36" style="margin-bottom: 30px;" @click="toMyCenter()"></Icon>
+				</Badge>
+				</div>
+		</i-menu>
+	<hr />
+	</header>
+	

@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>带你去旅行-首页</title>
+		<%include("/travel/views/include.html"){}%>
+	</head>
+	<style type="text/css">
+		#con {
+			width: 250px;
+			height: 350px
+		}
+		#con2 {
+			width: 250px;
+			height: 350px
+		}
+		.a {
+			width: 230px;
+			height: 250px
+		}
+		
+	</style>
+	<body>
+		<div class="layout" id="app" @click="hideSearch" v-cloak>
+			<layout>
+				<%include("/travel/views/header.html"){}%>
+				<carousel v-model="value2" loop autoplay autoplay-speed="5000">
+					<carousel-item>
+						<div class="demo-carousel carousel1"><img src="/travel/images/lb1.jpeg"></div>
+					</carousel-item>
+					<carousel-item>
+						<div class="demo-carousel carousel2"><img src="/travel/images/lb2.jpeg"></div>
+					</carousel-item>
+					<carousel-item>
+						<div class="demo-carousel carousel3"><img src="/travel/images/lb3.jpeg"></div>
+					</carousel-item>
+					<carousel-item>
+						<div class="demo-carousel carousel4"><img src="/travel/images/lb4.jpeg"></div>
+					</carousel-item>
+				</carousel>
+
+
+				<div class="search-group">
+					<i-radio-group v-model="select" style="color: #FFFCEF;">
+						<i-radio :label="'攻略'"></i-radio>
+						<i-radio :label="'交流贴'"></i-radio>
+					</i-radio-group>
+					<i-input search enter-button placeholder="搜索攻略/交流贴..." @on-search="getList()" @on-change="getCity" v-model="page.searchValue"
+					 style="margin-top: 6px;" />
+				</div>
+
+				<div v-show="searchShow" class="m-search-suggest m-search-suggest-index hide" style="left: 50%;transform:translateX(-50%) ; top: 590px; display: block;padding: 5px;">
+					<li v-for="d in searchData" @click="setSearchVal(d.location)" class="mss-item _j_listitem" data-type="mdd"
+					 data-url="http://www.mafengwo.cn/travel-scenic-spot/mafengwo/10466.html">
+						<div class="mss-title">
+							<span class="mss-fr">{{d.admin_area}}-{{d.parent_city}}</span><span class="mss-cn">
+								<span class="mss-key">{{d.location}}</span></span>
+						</div>
+					</li>
+					</ul>
+				</div>
+				<content :style="{margin: '0px auto',width:'90%', background: '#fff', minHeight: '500px'}">
+
+					<row style="padding-bottom: 20px;">
+
+						<i-col span="7">
+							<Card style="width:310px;height:380px;margin: 10px;">
+								<div class="asidebox box-news">
+									<div class="asidebox-hd">
+										<h1 style="float: left;">最新活动</h1>
+										<div style="float: right; margin-right: 20px; font-size:8px;">
+											<a style="float: left;text-decoration:none;font-size:8px;" @click="toActivityList()">更多></a>
+										</div>
+									</div>
+									<div id="con">
+										<!--外层容器-->
+										<div class="a" v-for="r1 in rank">
+											<img :src="r1.img" style="height: 150px; object-fit: cover;width: 220px;border-radius:5px ;">
+											<a style="height: 150px;width: 80% ;float: left;" @click="toActivityContent(r1.id)" target="_self">
+												{{r1.title}}<br /></a>
+										</div>
+										<div class="a" style="display:none" v-for="r2 in rank2">
+											<img :src="r2.img" style="height: 150px; object-fit: cover;width: 220px;border-radius:5px ;">
+											<a style="height: 150px;width: 80% ;float: left;" @click="toActivityContent(r2.id)" target="_self">
+												{{r2.title}}<br /></a>
+										</div>
+										<div class="a" style="display:none" v-for="r3 in rank3">
+											<img :src="r3.img" style="height: 150px; object-fit: cover;width: 220px;border-radius:5px ;">
+											<a style="height: 150px;width: 80% ;float: left;" @click="toActivityContent(r3.id)" target="_self">
+												{{r3.title}}<br /></a>
+										</div>
+										<div class="a" style="display:none" v-for="r4 in rank4">
+											<img :src="r4.img" style="height: 150px; object-fit: cover;width: 220px;border-radius:5px ;">
+											<a style="height: 150px;width: 80% ;float: left;" @click="toActivityContent(r4.id)" target="_self">
+												{{r4.title}}<br /></a>
+										</div>
+									</div>
+
+								</div>
+							</Card>
+							<Card style="width:310px;height:380px;margin: 10px;">
+								<div class="asidebox box-news">
+									<div class="asidebox-hd">
+										<h1 style="float: left;">最新贴</h1>
+										<div style="float: right; margin-right: 20px; font-size:8px;">
+											<a style="float: left;text-decoration:none;font-size:8px;" @click="toNote()">更多></a>
+										</div>
+									</div>
+									<div id="con2">
+										<!--外层容器-->
+										<div class="a" v-for="r1 in note1">
+											<img :src="r1.headimg" style="height: 150px; object-fit: cover;width: 220px;border-radius:5px ;">
+											<a style="height: 150px;width: 80% ;float: left;" @click="toNoteContent(r1.id)" target="_self">
+												{{r1.title}}<br /></a>
+										</div>
+										<div class="a" style="display:none" v-for="r2 in note2">
+											<img :src="r2.headimg" style="height: 150px; object-fit: cover;width: 220px;border-radius:5px ;">
+											<a style="height: 150px;width: 80% ;float: left;" @click="toNoteContent(r2.id)" target="_self">
+												{{r2.title}}<br /></a>
+										</div>
+										<div class="a" style="display:none" v-for="r3 in note3">
+											<img :src="r3.headimg" style="height: 150px; object-fit: cover;width: 220px;border-radius:5px ;">
+											<a style="height: 150px;width: 80% ;float: left;" @click="toNoteContent(r3.id)" target="_self">
+												{{r3.title}}<br /></a>
+										</div>
+										<div class="a" style="display:none" v-for="r4 in note4">
+											<img :src="r4.headimg" style="height: 150px; object-fit: cover;width: 220px;border-radius:5px ;">
+											<a style="height: 150px;width: 80% ;float: left;" @click="toNoteContent(r4.id)" target="_self">
+												{{r4.title}}<br /></a>
+										</div>
+									</div>
+								</div>
+							</Card>
+							<Card style="width:310px;margin: 10px;">
+								<div class="asidebox box-news">
+									<div class="asidebox-hd">
+										<h3 style="float: left;">带你去旅行网最新资讯</h3>
+										<Button-Group type="button" style="float: right;">
+											<i-Button label="large" @click="getRank('1')">日</i-Button>
+											<i-Button label="default" @click="getRank('7')">周</i-Button>
+											<i-Button label="small" @click="getRank('30')">月</i-Button>
+										</Button-Group>
+									</div>
+									<br /><br />
+									<ul class="asidebox-bd">
+										<li v-for="(r,index) in newsRank"><span>{{index+1}}，</span><a @click="toNewsContent(r.id)">{{r.title}}</a></li>
+									</ul>
+								</div>
+							</Card>
+						</i-col>
+
+						<i-col span="17">
+
+							<affix :offset-top="150" style="position: absolute;right:-50px ;top:20px">
+								<Button-Group vertical>
+									<i-Button icon="md-arrow-round-up" @click="toTop"></i-Button>
+									<i-Button icon="ios-brush" @click="toWrite"></i-Button>
+								</Button-Group>
+							</affix>
+							<br /><br />
+							<div style="color: #000000; margin-top: 15px; font-size:15px;">
+								<h1 style="float: left;">热门攻略</h1>
+								<div style="float: right; margin-right: 20px; font-size:8px;">
+									<br />
+									<a style="float: left;text-decoration:none;font-size:8px;" @click="toStrategy()">更多></a>
+								</div>
+							</div>
+							<div style="color: #CCCCCC;margin: 80px 20px; font-size:18px ;" v-show="items.length<1">
+								<p>没有更多内容了...</p>
+							</div>
+
+							<br /><br /><br />
+							<hr /><br />
+
+							<div class="tn-item clearfix" v-for="item in items">
+								<div class="tn-image">
+									<img :src="item.headimg" style="height: 150px; object-fit: cover;width: 220px;border-radius:5px ;">
+								</div>
+								<div class="tn-wrapper">
+									<dl>
+										<dt>
+											<a @click="toStrategyContent(item.id)" target="_self">{{item.title}}</a>
+										</dt>
+										<dd>
+											<a @click="toStrategyContent(item.id)" target="_self"> {{item.simple_show}}</a>
+										</dd>
+									</dl>
+									<div class="tn-extra">
+										<span class="tn-ding">
+											<a @click="addLaud(item.id)">
+												<Icon type="ios-heart" size="28" :color="loveColor" />
+												</icon>
+											</a>
+											<a class="btn-ding"></a>
+											<em id="topvote12046698" style="font-size:18px ;">{{item.mylaud}}</em>
+										</span>
+										<span class="tn-place">
+											<icon size="24" color="#888" type="ios-pin"></icon><a href="javascript:void(0);">{{item.main_address}}</a>，by
+										</span>
+										<span class="tn-user">
+											<a @click="toOtherCenter(item.publish_user)" target="_self" rel="nofollow">
+												{{item.publish_username}}
+											</a>
+										</span>
+										<span class="tn-nums">
+											<Icon type="ios-eye" size="24" color="#888" />
+											</icon>{{item.readme}}</span>&nbsp;&nbsp;&nbsp;
+										<span class="tn-nums">
+											<Icon type="ios-alarm" size="18" color="#888"></icon>{{item.publish_time | formatDate}}
+										</span>
+									</div>
+								</div>
+							</div>
+
+							<Page :total="page.pageTotal" :page-size="page.pageSize" placement="top" @on-change="handlePage"
+							 @on-page-size-change='handlePageSize' show-sizer show-elevator show-total style="margin-top: 30px;" />
+						</i-col>
+					</row>
+
+
+
+				</content>
+				<%include("/travel/views/footer.html"){}%>
+			</layout>
+		</div>
+		<script>
+			var vm = new Vue({
+				el: '#app',
+				components: {
+					IRadio: window.iview.Radio,
+					IRadioGroup: window.iview.RadioGroup
+				},
+				data: {
+					x: '1',
+					searchShow: false,
+					user:'${session.user.id!""}',
+					searchData: [],
+					value2: 0,
+					page: {
+						pageTotal: 0,
+						pageNum: 1,
+						pageSize: 10,
+						searchValue: '',
+					},
+					items: [],
+					loveColor: '#f42121',
+					newsRank: [],
+					rank: [],
+					rank2: [],
+					rank3: [],
+					rank4: [],
+					note1: [],
+					note2: [],
+					note3: [],
+					note4: [],
+					// 是否有新消息
+					newMessageCount: 0,
+					select: '攻略',
+
+				},
+				methods: {
+					getCity(param) {
+						if (!param.data) {
+							return;
+						}
+						$.get("https://search.heweather.net/find?location=" + param.data + "&key=HE1903112121251629&number=8", function(
+							data) {
+							vm.searchData = [];
+							vm.searchShow = false;
+							if (data.HeWeather6[0].status == "ok") {
+								vm.searchShow = true;
+								data.HeWeather6[0].basic.forEach(function(e) {
+									vm.searchData.push(e)
+								})
+							}
+						})
+					},
+					hideSearch() {
+						vm.searchShow = false;
+					},
+					setSearchVal(city) {
+						vm.page.searchValue = city;
+					},
+					handlePage(value) {
+						console.log(value)
+						this.page.pageNum = value
+						this.getList()
+					},
+					handlePageSize(value) {
+						this.page.pageSize = value
+						this.getList()
+					},
+					getList() {
+						if (this.select == "攻略") {
+							$.get('/strategy/getStrategyList', this.page, function(data) {
+								vm.items = data.list;
+								vm.page.pageTotal = data.totalRow;
+								console.log(vm.items)
+							})
+						} else {
+							$.get('/note/getNoteList', this.page, function(data) {
+								vm.items = data.list;
+								vm.page.pageTotal = data.totalRow;
+								console.log(vm.items)
+							})
+						}
+					},
+					toNoteContent(id) {
+						window.location.href = '/note/getANote?id=' + id;
+					},
+					toStrategyContent(id) {
+						if (this.select == "攻略") {
+							window.location.href = '/strategy/getAStrategy?id=' + id;
+						} else {
+							window.location.href = '/note/getANote?id=' + id;
+						}
+					},
+					toActivityContent(id) {
+						window.location.href = '/news/getANewactivity?id=' + id;
+					},
+					toNewsContent(id) {
+						window.location.href = '/news/getANews?id=' + id;
+					},
+					toNote() {
+						window.location.href = '/note/list';
+					},
+					toNews() {
+						window.location.href = '/news/list';
+					},
+					toActivityList() {
+						window.location.href = '/news/activityList';
+					},
+					toStrategy() {
+						window.location.href = '/strategy/list';
+					},
+					toMyCenter() {
+						window.location.href = '/user/toMyCenter';
+					},
+					addLaud(id) {
+						$.get('/strategy/setLaud', {
+							id: id
+						}, function(data) {
+							if (!data.success) {
+								vm.$Message.warning(data.msg);
+							} else {
+								vm.$Message.success("点赞成功");
+								vm.getList();
+							}
+						})
+					},
+					getLastOne() {
+						$.get('/news/getLastOne', function(data) {
+								vm.rank = data;
+							}),
+							$.get('/note/getLastOne', function(data) {
+								vm.note1 = data;
+							})
+					},
+					getLastTwo() {
+						$.get('/news/getLastTwo', function(data) {
+								vm.rank2 = data;
+							}),
+							$.get('/note/getLastTwo', function(data) {
+								vm.note2 = data;
+							})
+					},
+					getLastThree() {
+						$.get('/news/getLastThree', function(data) {
+								vm.rank3 = data;
+							}),
+							$.get('/note/getLastThree', function(data) {
+								vm.note3 = data;
+							})
+					},
+					getLastFour() {
+						$.get('/news/getLastFour', function(data) {
+								vm.rank4 = data;
+							}),
+							$.get('/note/getLastFour', function(data) {
+								vm.note4 = data;
+							})
+					},
+					toOtherCenter(userid) {
+						window.location.href = '/user/toOtherCenter?userid=' + userid;
+					},
+					toTop() {
+						$("html,body").animate({
+							scrollTop: 0
+						}, 500);
+					},
+					toWrite() {
+						if(this.user){
+						window.location.href = '/strategy/toWrite';
+						}
+						else{
+							vm.$Message.warning('请先登录~~');
+							return;
+						}
+					},
+					getRank(dateval) {
+						$.get('/news/getRank', {
+							dateval: dateval
+						}, function(data) {
+							vm.newsRank = data;
+						})
+					},
+					// 查询新消息， 
+					getNewMessage() {
+						$.get('/user/getNewMessage', function(data) {
+							vm.newMessageCount = data.length || 0;
+						})
+					},
+				},
+				created() {
+
+				},
+				filters: {
+					formatDate: function(val) {
+						var date = new Date(val);
+						var year = date.getFullYear();
+						var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+						var day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+						var hours = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+						var minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+						var seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+						return year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
+					}
+				},
+				mounted() {
+					this.getList();
+					this.getRank(30);
+					this.getLastOne();
+					this.getLastTwo();
+					this.getLastThree();
+					this.getLastFour();
+					this.getNewMessage();
+					console.log(this.newMessageCount)
+				}
+			})
+		</script>
+		<script type="text/javascript">
+			function G(e) {
+				return document.getElementById(e);
+			}
+
+			function myPlayer(con, child, speed) {
+				var ts = G(con).getElementsByTagName(child), //获取容器内需要轮流显示的子元素：这里是 div
+					timer, k = 0;
+				var timer = setInterval(function() { //定义时间控制器
+					for (var m = 0; m < ts.length; m++) {
+						ts[m].style.display = "none";
+					} //先隐藏全部，此处效率降低，可以考虑不用循环
+					ts[k].style.display = ""; //显示需要显示的
+					if (k > ts.length - 2) {
+						k = 0;
+					} else {
+						k++;
+					}
+				}, speed);
+			}
+			myPlayer("con", "div", 2000); //调用，参数一外层元素ID，参数二循环元素名称，间隔时间：秒数的1000倍
+		</script>
+		<script type="text/javascript">
+			function G(e) {
+				return document.getElementById(e);
+			}
+		
+			function myPlayer(con2, child, speed) {
+				var ts = G(con2).getElementsByTagName(child), //获取容器内需要轮流显示的子元素：这里是 div
+					timer, k = 0;
+				var timer = setInterval(function() { //定义时间控制器
+					for (var m = 0; m < ts.length; m++) {
+						ts[m].style.display = "none";
+					} //先隐藏全部，此处效率降低，可以考虑不用循环
+					ts[k].style.display = ""; //显示需要显示的
+					if (k > ts.length - 2) {
+						k = 0;
+					} else {
+						k++;
+					}
+				}, speed);
+			}
+			myPlayer("con2", "div", 1000); //调用，参数一外层元素ID，参数二循环元素名称，间隔时间：秒数的1000倍
+		</script>
+		<script type="text/javascript">
+			if (top.location != self.location) {
+				var tempwindow = window.open(location.href);
+				window.parent.tabsClose();
+
+			}
+		</script>
+
+	</body>
+</html>
